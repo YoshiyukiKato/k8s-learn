@@ -1,0 +1,11 @@
+apiVersion: v1
+name: iris
+version: 0.0.1
+kubeVersion: ^1.11.0
+description: iris service
+keywords:
+  - iris
+maintainers:
+  - name: Yoshiyuki Kato
+    email: yo.shuuuuki@gmail.com
+engine: gotpl

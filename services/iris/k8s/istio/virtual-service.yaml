@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: iris-vs
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - api-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /iris
+    route:
+    - destination:
+        host: iris.iris.svc.cluster.local
+        port:
+          number: 8080
+    

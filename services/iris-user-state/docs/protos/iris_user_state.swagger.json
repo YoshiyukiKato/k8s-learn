@@ -1,0 +1,231 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "protos/iris_user_state.proto",
+    "version": "version not set"
+  },
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/iris/{iris_id}": {
+      "get": {
+        "operationId": "GetIris",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protosGetIrisResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "iris_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "IrisUserState"
+        ]
+      },
+      "post": {
+        "operationId": "UpdateIris",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protosUpdateIrisResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "iris_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/protosUpdateIrisRequest"
+            }
+          }
+        ],
+        "tags": [
+          "IrisUserState"
+        ]
+      }
+    },
+    "/user/{user_id}": {
+      "get": {
+        "operationId": "GetUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protosGetUserResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "IrisUserState"
+        ]
+      },
+      "post": {
+        "operationId": "UpdateUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protosUpdateUserResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/protosUpdateUserRequest"
+            }
+          }
+        ],
+        "tags": [
+          "IrisUserState"
+        ]
+      }
+    },
+    "/user/{user_id}/iris": {
+      "post": {
+        "operationId": "UpdateUserByIris",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protosUpdateUserByIrisResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/protosUpdateUserByIrisRequest"
+            }
+          }
+        ],
+        "tags": [
+          "IrisUserState"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protosGetIrisResponse": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "$ref": "#/definitions/protosVector"
+        }
+      }
+    },
+    "protosGetUserResponse": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "$ref": "#/definitions/protosVector"
+        }
+      }
+    },
+    "protosUpdateIrisRequest": {
+      "type": "object",
+      "properties": {
+        "iris_id": {
+          "type": "string"
+        },
+        "params": {
+          "$ref": "#/definitions/protosVector"
+        }
+      }
+    },
+    "protosUpdateIrisResponse": {
+      "type": "object"
+    },
+    "protosUpdateUserByIrisRequest": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "string"
+        },
+        "iris_id": {
+          "type": "string"
+        }
+      }
+    },
+    "protosUpdateUserByIrisResponse": {
+      "type": "object"
+    },
+    "protosUpdateUserRequest": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "string"
+        },
+        "params": {
+          "$ref": "#/definitions/protosVector"
+        }
+      }
+    },
+    "protosUpdateUserResponse": {
+      "type": "object"
+    },
+    "protosVector": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "float"
+          }
+        }
+      }
+    }
+  }
+}

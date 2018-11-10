@@ -1,0 +1,81 @@
+syntax = "proto3";
+
+import "google/api/annotations.proto";
+
+package protos;
+
+service IrisUserState {
+  rpc GetIris (GetIrisRequest) returns (GetIrisResponse) {
+    option (google.api.http) = {
+      get: "/iris/{iris_id}"
+    };
+  }
+
+  rpc UpdateIris (UpdateIrisRequest) returns (UpdateIrisResponse) {
+    option (google.api.http) = {
+      post: "/iris/{iris_id}"
+      body: "*"
+    };
+  }
+
+  rpc GetUser (GetUserRequest) returns (GetUserResponse) {
+    option (google.api.http) = {
+      get: "/user/{user_id}"
+    };
+  }
+  
+  rpc UpdateUser (UpdateUserRequest) returns (UpdateUserResponse) {
+    option (google.api.http) = {
+      post: "/user/{user_id}"
+      body: "*"
+    };
+  }
+
+  rpc UpdateUserByIris (UpdateUserByIrisRequest) returns (UpdateUserByIrisResponse) {
+    option (google.api.http) = {
+      post: "/user/{user_id}/iris"
+      body: "*"
+    };
+  }
+}
+
+message Vector {
+  repeated float value = 1;
+}
+
+message GetIrisRequest {
+  string iris_id = 1;
+}
+
+message GetIrisResponse {
+  Vector state = 1;
+}
+
+message UpdateIrisRequest {
+  string iris_id = 1;
+  Vector params = 2;
+}
+
+message UpdateIrisResponse {}
+
+message GetUserRequest {
+  string user_id = 1;
+}
+
+message GetUserResponse {
+  Vector state = 1;
+}
+
+message UpdateUserRequest {
+  string user_id = 1;
+  Vector params = 2;
+}
+
+message UpdateUserResponse {}
+
+message UpdateUserByIrisRequest {
+  string user_id = 1;
+  string iris_id = 2;
+}
+
+message UpdateUserByIrisResponse {}

@@ -1,0 +1,50 @@
+steps:
+# compile protobuf for gateway
+- name: PROTO_GO_IMAGE_HERE
+  id: compile-proto-for-gateway
+  args: ['protoc', '$GATEWAY_FLAGS',
+    '--go_out=plugins=grpc:./gateway',
+    '--grpc-gateway_out=logtostderr=true:./gateway',
+    '--swagger_out=logtostderr=true:./docs',
+    'protos/*.proto']
+
+# compile protobuf for endpoint
+- name: PROTO_PYTHON_IMAGE_HERE
+  id: compile-proto-for-endpoint
+  args: ['python', 
+    '-m', 'grpc_tools.protoc',
+    '$GRPC_FLAGS', '$GATEWAY_FLAGS',
+    'protos/*.proto']
+
+# build endpoint image
+- name: gcr.io/cloud-builders/docker
+  id: build-endpoint
+  args: ['build',
+    '-f', './dockerfiles/endpoint.dockerfile',
+    '-t', 'gcr.io/$PROJECT_ID/$SERVICE/endpoint:$VERSION', '.']
+
+# build gateway image
+- name: gcr.io/cloud-builders/docker
+  id: build-gateway
+  args: ['build',
+    '-f', './dockerfiles/gateway.dockerfile',
+    '-t', 'gcr.io/$PROJECT_ID/$SERVICE/gateway:$VERSION', '.']
+
+# it requires register HELM_IMAGE to gcr.io
+# install service via helm
+- name: HELM_IMAGE_HERE
+  id: install-service-via-helm
+  args: ['helm',
+    'upgrade', '-i',
+    '--namespace', '$SERVICE',
+    '$SERVICE', 'k8s/$SERVICE']
+
+# it requires register ISTIOCTL_IMAGE to gcr.io
+# apply network setting via istioctl
+- name: ISTIOCTL_IMAGE_HERE
+  id: delete-network-via-istioctl
+  args: ['delete', '-f' , './k8s/istio/network.yaml']
+- name: ISTIOCTL_IMAGE_HERE
+  id: create-network-setting-via-istioctl
+  args: ['create', '-f' , './k8s/istio/network.yaml']
+

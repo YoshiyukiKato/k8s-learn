@@ -1,0 +1,122 @@
+---
+resource_types:
+- name: helm
+  type: docker-image
+  source:
+    repository: gcr.io/cloud-solutions-images/concourse-helm-gcp
+    tag: v0.2.1
+
+resources:
+# irisなどのリポジトリ
+- name: src-master
+  type: git
+  source: 
+    uri: https://github.com/YoshiyukiKato/k8s-learn.git
+    skip_ssl_verification: true
+    branch: master
+
+# gateway image
+- name: gateway-image
+  type: docker-image
+  source:
+    repository: ((registry.url))/iris/gateway
+    username: ((registry.username))
+    password: ((registry.password))
+
+# endpoint image
+- name: endpoint-image
+  type: docker-image
+  source:
+    repository: ((registry.url))/iris/endpoint
+    username: ((registry.username))
+    password: ((registry.password))
+
+# helm image
+- name: helm-deploy
+  type: helm
+  source:
+    cluster_url: ((gke.cluster-url))
+    cluster_ca: ((gke.cluster-ca))
+    token: ((gke.token))
+
+jobs:
+- name: build gateway # Job の名前
+  public: true # true にするとビルドログが認証なしで見れる
+  plan: # 実行したい [Steps](https://concourse-ci.org/steps.html) の列を書く
+  - get: src-master
+    trigger: true
+  - put: gateway-image
+    params:
+      build: src-master/services/iris
+      dockerfile: src-master/services/iris/dockerfiles/gateway.dockerfile
+    get_params:
+      skip_download: true
+
+- name: build endpoint # Job の名前
+  public: true # true にするとビルドログが認証なしで見れる
+  plan: # 実行したい [Steps](https://concourse-ci.org/steps.html) の列を書く
+  - get: src-master
+    trigger: true
+  - put: endpoint-image
+    params:
+      build: src-master/services/iris
+      dockerfile: src-master/services/iris/dockerfiles/endpoint.dockerfile
+    get_params:
+      skip_download: true
+
+#- name: prepare release info
+#  public: true
+#  plan:
+#  - 
+#  - task: set release name
+#    config:
+#      platform: linux
+#      image_resource:
+#        type: docker-image
+#       source:
+#         repository: busybox
+#    run:
+#       path: echo
+#       args:
+#        - iris
+#        - '>>'
+#        - ./iris
+
+- name: release to devenv
+  public: true
+  plan:
+  - get: gateway-image
+    passed:
+    - build gateway
+    params:
+      skip_download: true
+  - get: endpoint-image
+    passed:
+    - build endpoint
+    params:
+      skip_download: true
+  - get: src-master
+    passed:
+    - build gateway
+    - build endpoint
+  - put: helm-deploy
+    params:
+      chart: src-master/service/iris/k8s/iris
+      namespace: src-master/service/iris/release
+      release: src-master/service/iris/release
+      override_values:
+      - key: gateway-image
+        value: asia.gcr.io/rjb-eng/iris/gateway
+      - key: endpoint-image
+        value: asia.gcr.io/rjb-eng/iris/endpoint
+
+- name: delete from devenv
+  public: true
+  plan:
+  - put: helm-deploy
+    params:
+      release: src-master/service/iris/release
+      namespace: src-master/service/iris/release
+      delete: true
+      purge: true
+

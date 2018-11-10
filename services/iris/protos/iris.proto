@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+import "google/api/annotations.proto";
+
+package protos;
+
+service Iris {
+  rpc Predict (IrisRequest) returns (IrisResponse) {
+    option (google.api.http) = {
+      post: "/iris"
+      body: "*"
+    };
+  }
+}
+
+message IrisRequest {
+  repeated float data = 1;
+}
+
+message IrisResponse {
+  repeated uint32 label = 1;
+}
