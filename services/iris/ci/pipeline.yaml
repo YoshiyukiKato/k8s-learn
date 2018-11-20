@@ -3,8 +3,7 @@ resource_types:
 - name: helm
   type: docker-image
   source:
-    repository: gcr.io/cloud-solutions-images/concourse-helm-gcp
-    tag: v0.2.1
+    repository: linkyard/concourse-helm-resource
 
 resources:
 # irisなどのリポジトリ
@@ -64,56 +63,36 @@ jobs:
     get_params:
       skip_download: true
 
-#- name: prepare release info
-#  public: true
-#  plan:
-#  - 
-#  - task: set release name
-#    config:
-#      platform: linux
-#      image_resource:
-#        type: docker-image
-#       source:
-#         repository: busybox
-#    run:
-#       path: echo
-#       args:
-#        - iris
-#        - '>>'
-#        - ./iris
-
-- name: build chart
+- name: release to devenv
   public: true
   plan:
   - get: src-master
+    trigger: true
     passed:
     - build gateway
     - build endpoint
-  - task: set release name
+  - task: build chart
     config:
       platform: linux
       image_resource:
         type: docker-image
         source:
-          repository: busybox
+          repository: ubuntu
+      inputs:
+      - name: src-master
+      outputs:
+      - name: built-chart
       run:
-        path: tgz
+        path: /bin/bash
         args:
-        - -zcvf
-        - iris.tar.gz
-        - src-master/services/iris/k8s/iris
-
-- name: release to devenv
-  public: true
-  plan:
-  - get: src-master
-    passed:
-    - build chart
+        - -c
+        - |
+          cp -rf src-master/services/iris/k8s/iris iris && tar -zcvf built-chart/iris.tgz iris
   - put: helm-deploy
     params:
-      chart: iris.tar.gz
-      namespace: src-master/services/iris/release
-      release: src-master/services/iris/release
+      chart: built-chart/iris.tgz
+      namespace: iris
+      release: iris
       override_values:
       - key: gateway-image
         value: asia.gcr.io/rjb-eng/iris/gateway
@@ -129,4 +108,3 @@ jobs:
       namespace: src-master/services/iris/release
       delete: true
       purge: true
-
