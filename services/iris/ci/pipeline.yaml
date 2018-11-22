@@ -104,7 +104,6 @@ jobs:
   plan:
   - put: helm-deploy
     params:
-      release: src-master/services/iris/release
-      namespace: src-master/services/iris/release
+      release: iris
       delete: true
       purge: true
