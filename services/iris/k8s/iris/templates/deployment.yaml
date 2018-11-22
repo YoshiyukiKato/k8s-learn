@@ -16,20 +16,20 @@ spec:
     spec:
       containers:
       - name: gateway
-        {{- if .Values.gateway-image }}
+        {{ if .Values.gateway-image }}
         image: .Values.gateway-image
-        {{- else }}
+        {{ else }}
         image: {{.Chart.Name}}/gateway:{{.Chart.Version}}
-        {{- end }}
+        {{ end }}
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: {{.Values.gateway.port}}
       - name: endpoint
-        {{- if .Values.endpoint-image }}
+        {{ if .Values.endpoint-image }}
         image: .Values.endpoint-image
-        {{- else }}
+        {{ else }}
         image: {{.Chart.Name}}/endpoint:{{.Chart.Version}}
-        {{- end }}
+        {{ end }}
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: {{.Values.endpoint.port}}
