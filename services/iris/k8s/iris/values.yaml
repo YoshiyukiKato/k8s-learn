@@ -1,4 +1,6 @@
 gateway:
   port: 8080
+  image: asia.gcr.io/rjb-eng/iris/gateway
 endpoint:
   port: 50001
+  image: asia.gcr.io/rjb-eng/iris/endpoint

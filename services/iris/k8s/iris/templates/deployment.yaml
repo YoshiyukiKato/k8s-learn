@@ -16,8 +16,8 @@ spec:
     spec:
       containers:
       - name: gateway
-        {{ if .Values.gateway-image }}
-        image: .Values.gateway-image
+        {{ if .Values.gateway.image }}
+        image: .Values.gateway.image
         {{ else }}
         image: {{.Chart.Name}}/gateway:{{.Chart.Version}}
         {{ end }}
@@ -25,8 +25,8 @@ spec:
         ports:
         - containerPort: {{.Values.gateway.port}}
       - name: endpoint
-        {{ if .Values.endpoint-image }}
-        image: .Values.endpoint-image
+        {{ if .Values.endpoint.image }}
+        image: .Values.endpoint.image
         {{ else }}
         image: {{.Chart.Name}}/endpoint:{{.Chart.Version}}
         {{ end }}
