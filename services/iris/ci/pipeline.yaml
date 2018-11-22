@@ -91,7 +91,6 @@ jobs:
   - put: helm-deploy
     params:
       chart: built-chart/iris.tgz
-      namespace: iris
       release: iris
       override_values:
       - key: gateway-image
