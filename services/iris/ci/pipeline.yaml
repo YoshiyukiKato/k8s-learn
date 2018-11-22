@@ -97,6 +97,13 @@ jobs:
         value: asia.gcr.io/rjb-eng/iris/gateway
       - key: endpoint-image
         value: asia.gcr.io/rjb-eng/iris/endpoint
+    on_failure: 
+      put: helm-deploy
+      params:
+        release: iris
+        namespace: iris
+        delete: true
+        purge: true
 
 - name: delete from devenv
   public: true
@@ -104,5 +111,6 @@ jobs:
   - put: helm-deploy
     params:
       release: iris
+      namespace: iris
       delete: true
       purge: true
